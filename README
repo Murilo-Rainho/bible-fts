@@ -22,10 +22,12 @@ The dataset used comes from [Biblia Livre](https://github.com/blivre/BibliaLivre
 ```
 bible-fts/
 ├─ BibleFTS.Api/ # .NET Web API
+├─ BibleFTS.Tests/ # .NET Web API Tests
 ├─ data/
 │ └─ bliv-n4_vpl.zip # Bible dataset (verse-per-line format)
+├─ bible-fts.sln
 ├─ docker-compose.yml
-├─ Dockerfile
+├─ LICENSE
 ├─ README.md
 └─ ...
 ```
