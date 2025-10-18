@@ -33,3 +33,5 @@ app.MapGet("/health/es", async (IElasticClient es) =>
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
