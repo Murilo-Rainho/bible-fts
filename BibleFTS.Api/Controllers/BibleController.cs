@@ -49,20 +49,50 @@ namespace BibleFTS.Api.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] int size = 10)
+        public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] int size = 10, [FromQuery] bool partialSearch = false)
         {
-            if (string.IsNullOrWhiteSpace(query) || Regex.IsMatch(query, @"[^\p{L}\p{N}\s'""-]"))
+            if (string.IsNullOrWhiteSpace(query))
                 return BadRequest("Query cannot be empty.");
+
+            var invalidExact = Regex.IsMatch(query, @"[^\p{L}\p{N}\s'""-]");
+            var invalidPartial = Regex.IsMatch(query, @"[^\p{L}\p{N}\s'""\-\*\?]");
+
+            if ((!partialSearch && invalidExact) || (partialSearch && invalidPartial))
+                return BadRequest("Invalid characters for this search mode.");
+
+            Func<QueryContainerDescriptor<Verse>, QueryContainer> esQuery;
+
+            if (partialSearch)
+            {
+                esQuery = q => q.Bool(b => b.Should(
+                    s => s.MatchPhrasePrefix(m => m
+                            .Field(v => v.Text)
+                            .Query(query)
+                            .Slop(2)
+                            .MaxExpansions(50) 
+                    ),
+                    s => s.QueryString(qs => qs
+                            .Query(query)
+                            .Fields(f => f
+                                .Field(v => v.Text, 2)
+                                .Field(v => v.Book))
+                            .AnalyzeWildcard(true)
+                            .DefaultOperator(Operator.And)
+                    )
+                ));
+            }
+            else
+            {
+                esQuery = q => q.MultiMatch(mm => mm
+                    .Query(query)
+                    .Fields(f => f.Field(v => v.Text, 2).Field(v => v.Book))
+                );
+            }
 
             var response = await _elastic.SearchAsync<Verse>(s => s
                 .Index("bible")
                 .Size(size)
-                .Query(q => q
-                    .MultiMatch(mm => mm
-                        .Query(query)
-                        .Fields(f => f.Field(v => v.Text, 2).Field(v => v.Book))
-                    )
-                )
+                .Query(esQuery)
                 .TrackTotalHits(true)
             );
 
@@ -79,7 +109,7 @@ namespace BibleFTS.Api.Controllers
 
             return Ok(new
             {
-                total = response.Total,
+                total = response.HitsMetadata?.Total?.Value ?? 0,
                 tookMs = response.Took,
                 results
             });
