@@ -1,13 +1,14 @@
 using Microsoft.OpenApi.Models;
 using Nest;
+using BibleFTS.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var esUrl = builder.Configuration["ELASTICSEARCH_URL"] ?? "http://localhost:9200";
-var settings = new ConnectionSettings(new Uri(esUrl))
-    .DefaultIndex("bible");
+var settings = new ConnectionSettings(new Uri(esUrl)).DefaultIndex("bible");
 builder.Services.AddSingleton<IElasticClient>(new ElasticClient(settings));
 
+builder.Services.AddScoped<BibleSeeder>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

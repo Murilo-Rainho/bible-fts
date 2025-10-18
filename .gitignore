@@ -40,7 +40,7 @@ docker-compose.override.yml
 .env
 
 # Named volumes (Elasticsearch data)
-# Evita subir dados persistidos dos containers
+# Avoid uploading persisted data from containers
 esdata/
 esdata01/
 esdata02/
@@ -80,3 +80,9 @@ TestResults/
 coverage/
 *.coverage
 *.coveragexml
+
+# ================================
+# Allow zips only in /data
+# ================================
+!data/
+!data/*.zip

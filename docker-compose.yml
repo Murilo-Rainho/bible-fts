@@ -37,7 +37,9 @@ services:
       - "8080:8080"
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - ELASTICSEARCH_URL=http://es:9200
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    volumes:
+      - ./data:/app/data:ro
     depends_on:
       elasticsearch:
         condition: service_healthy

@@ -3,6 +3,7 @@ using Nest;
 using Elasticsearch.Net;
 using BibleFTS.Api.Models;
 using System.Text.RegularExpressions;
+using BibleFTS.Api.Services;
 
 namespace BibleFTS.Api.Controllers
 {
@@ -11,9 +12,29 @@ namespace BibleFTS.Api.Controllers
     public class BibleController : ControllerBase
     {
         private readonly IElasticClient _elastic;
-        public BibleController(IElasticClient elastic)
+        private readonly BibleSeeder _seeder;
+        public BibleController(IElasticClient elastic, BibleSeeder seeder)
         {
             _elastic = elastic;
+            _seeder = seeder;
+        }
+
+        [HttpPost("seed")]
+        public async Task<IActionResult> Seed(CancellationToken ct = default)
+        {
+            try
+            {
+                await _seeder.SeedAsync(ct);
+                return Ok(new { status = "ok" });
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.ToString(),
+                    title: "Seed failed",
+                    statusCode: 500
+                );
+            }
         }
 
         [HttpPost]
@@ -28,22 +49,21 @@ namespace BibleFTS.Api.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string query)
+        public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] int size = 10)
         {
             if (string.IsNullOrWhiteSpace(query) || Regex.IsMatch(query, @"[^\p{L}\p{N}\s'""-]"))
                 return BadRequest("Query cannot be empty.");
 
             var response = await _elastic.SearchAsync<Verse>(s => s
+                .Index("bible")
+                .Size(size)
                 .Query(q => q
                     .MultiMatch(mm => mm
                         .Query(query)
-                        .Fields(f => f
-                            .Field(v => v.Text, boost: 2)
-                            .Field(v => v.Book)
-                        )
+                        .Fields(f => f.Field(v => v.Text, 2).Field(v => v.Book))
                     )
                 )
-                .Size(10)
+                .TrackTotalHits(true)
             );
 
             if (!response.IsValid)
