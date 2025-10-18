@@ -1,0 +1,88 @@
+# ================================
+# .NET / C# build and runtime
+# ================================
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+*.user
+*.vspscc
+*.vssscc
+*.dbmdl
+*.dbproj.schemaview
+*.dbproj.user
+*.suo
+*.sln.docstates
+
+# Visual Studio & Rider
+.vs/
+.idea/
+*.userosscache
+*.sln.iml
+
+# ASP.NET generated files
+wwwroot/dist/
+wwwroot/lib/
+wwwroot/node_modules/
+Generated_Code/
+
+# ================================
+# Docker
+# ================================
+*.pid
+*.tar
+*.log
+docker-compose.override.yml
+.env
+
+# Named volumes (Elasticsearch data)
+# Avoid uploading persisted data from containers
+esdata/
+esdata01/
+esdata02/
+
+# ================================
+# Secrets / configs locais
+# ================================
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+.env.local
+.env.development
+
+# ================================
+# OS junk files
+# ================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ================================
+# Archives and backups
+# ================================
+*.zip
+*.7z
+*.rar
+*.gz
+*.tar.gz
+*.bak
+*.tmp
+
+# ================================
+# Test coverage & reports
+# ================================
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# ================================
+# Allow zips only in /data
+# ================================
+!data/
+!data/*.zip

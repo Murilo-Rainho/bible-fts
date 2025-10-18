@@ -1,0 +1,172 @@
+# 📖 Bible Full-Text Search (FTS)
+
+This project demonstrates how to build a **.NET 8 Web API** that integrates with **Elasticsearch** and **Kibana** to perform full-text search (FTS) over the entire Bible text.  
+The dataset used comes from [Biblia Livre](https://github.com/blivre/BibliaLivre), in the “verse-per-line” format (`bliv-n4_vpl.zip`).
+
+---
+
+## 🧩 Tech Stack
+
+| Component | Description |
+|------------|-------------|
+| **.NET 8 (C#)** | API and business logic |
+| **Elasticsearch** | Full-text search engine |
+| **Kibana** | Visualization and query interface for Elasticsearch |
+| **Docker & Docker Compose** | Environment orchestration |
+| **Swagger / OpenAPI** | API documentation and testing UI |
+
+---
+
+## ⚙️ Project Structure
+
+```
+bible-fts/
+├─ BibleFTS.Api/ # .NET Web API
+├─ data/
+│ └─ bliv-n4_vpl.zip # Bible dataset (verse-per-line format)
+├─ docker-compose.yml
+├─ Dockerfile
+├─ README.md
+└─ ...
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+
+Make sure the following are installed:
+
+- **Docker** & **Docker Compose**
+- **Git**
+
+> ⚠️ .NET SDK is optional — you only need it for local development outside Docker.
+
+---
+
+### 2. Clone the Repository
+
+```bash
+git clone https://github.com/Murilo-Rainho/bible-fts.git
+cd bible-fts
+```
+
+### 3. Ensure the Dataset is ok
+Ensure the dataset is here:
+```
+bible-fts/
+ ├─ data/
+ │   └─ bliv-n4_vpl.zip
+```
+If there was nothing, download the bliv-n4_vpl.zip [here](https://github.com/blivre/BibliaLivre/releases).
+
+### 4. Build and Run with Docker
+From the project root:
+
+```bash
+docker compose up --build
+```
+
+### 5 Check if application is running
+This will start:
+
+>API → http://localhost:8080
+>
+>Elasticsearch → http://localhost:9200
+>
+>Kibana → http://localhost:5601
+
+You can check container status anytime with:
+
+```bash
+docker compose ps
+```
+
+API Endpoints
+After the containers are up, open Swagger UI:
+
+http://localhost:8080/swagger
+
+#### Available Routes
+|     Method    |              Endpoint              |               Description              |
+| ------------- | ---------------------------------- | -------------------------------------- |
+|     POST      |           /api/bible/seed          |  Elasticsearch with the Bible dataset  |
+|      GET      |  /api/bible/search?query=anything  |       Performs a full-text search      |
+|     DELETE    |           /api/bible/all           |       Deletes all indexed verses       |
+|      GET      |       /api/bible/health/index      |       Checks if the index exists       |
+
+### 6 Seed database
+Wtih all application running perfectly, just seed ES
+
+```http
+Run POST /api/bible/seed
+```
+
+## 💡 Development Tips
+- To rebuild from scratch (remove all data & containers):
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+[Open Swagger](http://localhost:8080/swagger) and
+
+```http
+Run POST /api/bible/seed
+```
+
+- To check containers logs:
+
+```bash
+docker compose logs -f api
+```
+
+- Explore data in Kibana
+
+Kibana → Discover tab → index pattern: bible
+
+## ✍️ Example Workflow
+Start the stack:
+
+```bash
+docker compose up --build
+```
+
+[Open Swagger](http://localhost:8080/swagger)
+
+```http
+Run POST /api/bible/seed
+```
+
+Wait until seeding finishes (it may take a few seconds)
+
+Run a search:
+
+```http
+GET /api/bible/search?query=Deus%20criou
+```
+
+[Open Kibana](http://localhost:5601) → Discover → select bible index
+
+#### Environment Variables
+|       Variable      |           Default           |        Description       |
+| ------------------- | --------------------------- | ------------------------ |
+|  ELASTICSEARCH_URL  |	 http://elasticsearch:9200  |  Elasticsearch endpoint  |
+|   ASPNETCORE_URLS   |        http://+:8080        |     API listening URL    |
+
+> 🧾 License:
+> This project is for educational and demonstration purposes only.
+>
+> Bible text © Biblia Livre (CC BY-SA 4.0).
+
+> 💬 Author:
+> Murilo Lopes Rainho Moreira
+>
+> Full-Stack Developer (Node.js / .NET / AWS)
+>
+> [my email](murilorainho01@gmail.com)
+> [my linkedin](https://www.linkedin.com/in/murilo-rainho/)
+
+---
