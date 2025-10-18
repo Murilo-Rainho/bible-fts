@@ -71,11 +71,11 @@ docker compose up --build
 ### 5 Check if application is running
 This will start:
 
->API → http://localhost:8080
+>API (Swagger) → http://localhost:8080/swagger/index.html
 >
 >Elasticsearch → http://localhost:9200
 >
->Kibana → http://localhost:5601
+>Kibana → http://localhost:5601/app/home#/
 
 You can check container status anytime with:
 
@@ -84,9 +84,7 @@ docker compose ps
 ```
 
 API Endpoints
-After the containers are up, open Swagger UI:
-
-http://localhost:8080/swagger
+After the containers are up, open [Swagger UI](http://localhost:8080/swagger/index.html)
 
 #### Available Routes
 |     Method    |              Endpoint              |               Description              |
@@ -111,7 +109,7 @@ docker compose down -v
 docker compose up --build
 ```
 
-[Open Swagger](http://localhost:8080/swagger) and
+[Open Swagger](http://localhost:8080/swagger/index.html) and
 
 ```http
 Run POST /api/bible/seed
@@ -125,7 +123,19 @@ docker compose logs -f api
 
 - Explore data in Kibana
 
-Kibana → Discover tab → index pattern: bible
+Kibana → Dev Tools → Console (with "bible" index)
+
+Example:
+```kibana
+GET bible/_search
+{
+  "query": {
+    "match_phrase": {
+      "text": "ido com Davi"
+    }
+  }
+}
+```
 
 ## ✍️ Example Workflow
 Start the stack:
@@ -134,7 +144,7 @@ Start the stack:
 docker compose up --build
 ```
 
-[Open Swagger](http://localhost:8080/swagger)
+[Open Swagger](http://localhost:8080/swagger/index.html)
 
 ```http
 Run POST /api/bible/seed
@@ -148,7 +158,19 @@ Run a search:
 GET /api/bible/search?query=Deus%20criou
 ```
 
-[Open Kibana](http://localhost:5601) → Discover → select bible index
+[Open Kibana](http://localhost:5601/app/home#/) → Dev Tools → Console (with "bible" index)
+
+Example:
+```kibana
+GET bible/_search
+{
+  "query": {
+    "match_phrase": {
+      "text": "Deus criou"
+    }
+  }
+}
+```
 
 #### Environment Variables
 |       Variable      |           Default           |        Description       |
