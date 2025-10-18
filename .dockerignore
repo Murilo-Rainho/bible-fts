@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+**/*.user
+**/*.csproj.user
+**/*.suo
+**/*.swp
+**/*.zip
+**/*.7z
+**/*.rar
+**/*.gz
+**/.vs/
+**/.vscode/
+**/node_modules/
+**/*.http
+.git
+.gitignore
+README.md
